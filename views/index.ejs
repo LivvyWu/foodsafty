@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+    <!-- Bootstrap core CSS -->
+    <link rel='stylesheet' href='/stylesheets/bootstrap.min.css'/>
+    <!-- Material Design Bootstrap -->
+    <link rel='stylesheet' href='/stylesheets/mdb.min.css'/>
+    <!-- custom styles -->
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <!-- Footable CSS -->
+    <link rel='stylesheet' href='/stylesheets/footable.bootstrap.css'/>
+
+</head>
+<body>
+<section class="foodsafty">
+    <header class="p-5">
+        <!--Section heading-->
+        <h1 class="section-heading text-center font-weight-bold">食品安全標章查詢</h1>
+    </header>
+    <div class="container-fluid category">
+        <p class="text-center grey-text">步驟一: 請選擇標章類型</p>
+        <div class="text-center">
+            <% fs_options.forEach(function(option, i){ %>
+            <button id="option<%= i %>" class="fs_option m-1 d-inline-block"><h5
+                        class="fs_option_name m-auto"><%= option %></h5>
+            </button>
+            <% }) %>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="d-flex flex-row justify-content-center mt-2 mb-2">
+            <p class="grey-text mb-0 align-self-center">步驟二: 請輸入</p>
+            <h3><span class="m-3 badge black selected-names align-self-center"></span></h3>
+            <p class="grey-text mb-0 align-self-center">標章號碼</p>
+        </div>
+
+        <div class="col-xs-12 col-md-6 m-auto search">
+            <form class="search_form form-inline waves-effect waves-light" action="">
+                <input id="traceCode" class="search_input" name="traceCode" type="search"
+                       placeholder="驗證合格可供識別或追查之號碼">
+                <button class="flexsearch_submit" type="button" onclick="flexsearchSubmit()" data-toggle="modal">➜
+                </button>
+            </form>
+            <div class="err_msg"></div>
+        </div>
+    </div>
+</section>
+
+<div id="nanobar"></div>
+<section class="mt-5 container results hidden">
+    <div class="col tables">
+        <table id="factory_table" class="table table-striped" data-paging="true">
+            <h5>標章資訊</h5>
+        </table>
+        <table id="product_table" class="table table-striped" data-paging="true">
+        </table>
+        <!--下面四個table只有tap會使用-->
+        <table id="tap_table1" class="table table-striped" data-paging="true">
+            <h5></h5>
+        </table>
+        <table id="tap_table2" class="table table-striped" data-paging="true">
+
+        </table>
+        <table id="tap_table3" class="table table-striped" data-paging="true">
+
+        </table>
+        <table id="tap_table4" class="table table-striped" data-paging="true">
+
+        </table>
+    </div>
+</section>
+<br>
+
+
+<script src='/javascripts/jquery-3.1.1.min.js'></script>
+<script src='/javascripts/tether.min.js'></script>
+<script src='/javascripts/bootstrap.min.js'></script>
+<script src='/javascripts/footable.min.js'></script>
+<script src='/javascripts/mdb.min.js'></script>
+<script src='/javascripts/nanobar.js'></script>
+<script>
+
+    var baseUrl = 'http://210.65.138.65:9000/';
+    var options = {
+        id: 'nanobar'
+    };
+    var nanobar = new Nanobar(options);
+
+    $(document).ready(function () {
+        $('.fs_option').click(function () {
+            $(this).addClass('option_selected').siblings().removeClass('option_selected');
+            var name = $(this).find('h5').text();
+            $('.selected-names').text(name);
+        })
+
+    });
+
+    function init() {
+        $('#factory_table').html('');
+        $('#product_table').html('');
+        $('#tap_table1').html('');
+        $('#tap_table2').html('');
+        $('#tap_table3').html('');
+        $('#tap_table4').html('');
+        $('h5.tap_head').html('');
+    }
+
+    function flexsearchSubmit() {
+
+        nanobar.go(50);
+        init();
+        var optionSelected = $('.option_selected').attr('id');
+        console.log(optionSelected);
+        var traceCode = $('#traceCode').val();
+
+        if (optionSelected) {
+
+            if (traceCode) {
+
+                $('.results').removeClass('hidden');
+                $('.err_msg').html('');
+
+                var f_columns = [];
+                var p_columns = [];
+                var url = '';
+
+                if (optionSelected == 'option0') {
+                    url = 'api/cas/' + traceCode + '/findByEmblemID';
+                    f_columns = [
+                        {
+                            name: "Factory_CName",
+                            title: "行號名稱",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "Factory_Address",
+                            title: "公司地址",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "Factory_Tel",
+                            title: "連絡電話",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "Factory_Fax",
+                            title: "傳真號碼",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "Factory_Director",
+                            title: "負責人",
+                            breakpoints: "xs sm"
+                        }
+                    ];
+                    p_columns = [
+                        {
+                            name: "Material_Name",
+                            title: "產品類別",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "PType_Name",
+                            title: "產品種類",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "Product_Name",
+                            title: "產品名稱",
+                            breakpoints: "xs sm"
+                        }
+                    ];
+                } else if (optionSelected == 'option1') {
+                    url = 'api/gaps/' + traceCode + '/findByGapLabel';
+                    f_columns = [
+                        {
+                            name: "className",
+                            title: "產銷班名稱",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "orgName",
+                            title: "輔導單位",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "mainClassName",
+                            title: "產業別",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "county",
+                            title: "縣市別",
+                            breakpoints: "xs sm"
+                        }
+                    ];
+                } else if (optionSelected == 'option2') {
+                    url = 'api/FS_taps/' + traceCode + '/findByTraceCode';
+                    f_columns = [
+                        {
+                            name: "Producer",
+                            title: "經營業者",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "FarmerName",
+                            title: "生產者姓名",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "ProductName",
+                            title: "產品名稱",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "Place",
+                            title: "產地",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "PackDate",
+                            title: "包裝日期",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "ValidDate",
+                            title: "驗證效期",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "CertificationName",
+                            title: "驗證機構",
+                            breakpoints: "xs sm"
+                        }
+                    ];
+//                    p_columns = [
+//                        {
+//                            name: "OperationDate",
+//                            title: "作業日期",
+//                            breakpoints: "xs sm"
+//                        }, {
+//                            name: "OperationType",
+//                            title: "作業種類",
+//                            breakpoints: "xs sm"
+//                        }, {
+//                            name: "Operation",
+//                            title: "作業內容",
+//                            breakpoints: "xs sm"
+//                        }
+//                    ];
+                } else if (optionSelected == 'option3') {
+                    url = 'api/FS_OrganicAgris/' + traceCode + '/findByVerifyCode';
+                    f_columns = [
+                        {
+                            name: "verifyOrg",
+                            title: "驗證機構",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "expiration",
+                            title: "驗證效期",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "status",
+                            title: "驗證狀態",
+                            breakpoints: "xs sm"
+                        }
+                    ];
+                    p_columns = [
+                        {
+                            name: "operatorName",
+                            title: "經營業者名稱",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "operatorAddress",
+                            title: "經營業者地址",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "contactPhone",
+                            title: "經營業者電話",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "productName",
+                            title: "產品品項",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "verifyManner",
+                            title: "加工/分裝/流通",
+                            breakpoints: "xs sm"
+                        }
+                    ];
+                } else if (optionSelected == 'option4') {
+                    url = 'api/pts/' + traceCode + '/findByTraceCode';
+                    f_columns = [
+                        {
+                            name: "modifyTime",
+                            title: "驗證日期",
+                            breakpoints: "xs"
+                        }, {
+                            name: "producer",
+                            title: "生產者",
+                            breakpoints: "xs"
+                        }, {
+                            name: "telephone",
+                            title: "聯絡電話",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "address",
+                            title: "聯絡地址",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "email",
+                            title: "電子郵件",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "url",
+                            title: "網址",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "description",
+                            title: "簡介",
+                            breakpoints: "xs sm"
+                        }
+                    ];
+                    p_columns = [
+                        {
+                            name: "productName",
+                            title: "產品名稱",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "place",
+                            title: "產地",
+                            breakpoints: "xs sm"
+                        }
+                    ];
+                } else if (optionSelected == 'option5') {
+                    url = 'api/FS_BeefTraces/' + traceCode + '/findByTraceID';
+                    f_columns = [
+                        {
+                            name: "FarmName",
+                            title: "畜牧場名稱",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "Farmer",
+                            title: "畜牧場負責人",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "FarmID",
+                            title: "畜牧場登記證號",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "FarmAddress",
+                            title: "畜牧場地址",
+                            breakpoints: "xs sm"
+                        }
+                    ];
+                    p_columns = [
+                        {
+                            name: "SlaughterDate",
+                            title: "屠宰日期",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "SlaughterPlace",
+                            title: "屠宰場",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "SlaughterAddress",
+                            title: "屠宰場地址",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "SlaughterPlaceOwner",
+                            title: "屠宰場負責人",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "SlaughterPlaceID",
+                            title: "屠宰場登記證",
+                            breakpoints: "xs sm"
+                        }
+                    ];
+                } else if (optionSelected == 'option6') {
+                    url = 'api/FS_TaftePoultries/' + traceCode + '/findByTraceno';
+                    f_columns = [
+                        {
+                            name: "prod",
+                            title: "產品名稱",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "regno",
+                            title: "登記號碼",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "name",
+                            title: "經營業者",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "boss",
+                            title: "生產者姓名",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "addr",
+                            title: "產地",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "addr2",
+                            title: "聯絡地址",
+                            breakpoints: "xs sm"
+                        }
+                    ];
+                    p_columns = [
+                        {
+                            name: "c01_name",
+                            title: "禽種",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "qty",
+                            title: "飼養規模",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "c02",
+                            title: "飼養方式",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "typical",
+                            title: "特色",
+                            breakpoints: "xs sm"
+                        }
+                    ]
+                }
+                generate(url, f_columns, p_columns, optionSelected);
+
+            } else {
+                $('.err_msg').html('請輸入標章號碼')
+            }
+        } else {
+            $('.err_msg').html('請選擇標章類型');
+        }
+    }
+
+    function generate(url, f_columns, p_columns, optionSelected) {
+        $.ajax({
+            url: baseUrl + url,
+            type: 'GET',
+            success: function (response) {
+
+                setTimeout(function () {
+                    nanobar.go(100);
+                }, 300);
+
+
+                var f_rows = [];
+                var p_rows = [];
+
+                if (Array.isArray(response)) {
+                    f_rows.push(response[0]);
+                } else {
+                    if (response) {
+                        f_rows.push(response);
+                    }
+                }
+
+                $('#factory_table').footable({
+                    "empty": "查無資料",
+                    "toggleColumn": "last",
+                    "expandFirst": true,
+                    "columns": f_columns,
+                    "rows": f_rows,
+                    "paging": {
+                        "position": "right",
+                        "size": 20
+                    }
+                });
+
+                if (p_columns.length > 0) {
+                    if (Array.isArray(response)) {
+                        if (response[0].OperationDetail && response[0].OperationDetail.OperationTag) {
+                            p_rows = response[0].OperationDetail.OperationTag;
+                        } else {
+                            p_rows = response;
+                        }
+                    } else {
+                        if (response.productList) {
+                            p_rows = response.productList;
+                        } else {
+                            p_rows.push(response);
+                        }
+                    }
+
+
+                    $('#product_table').footable({
+                        "empty": "查無資料",
+                        "toggleColumn": "last",
+                        "expandFirst": true,
+                        "columns": p_columns,
+                        "rows": p_rows,
+                        "paging": {
+                            "position": "right",
+                            "size": 10
+                        }
+                    });
+                }
+
+                if (optionSelected == 'option2') {
+
+                    if (response.ResumeDetail) {
+
+                        var content = tap_transferTag_column(response.ResumeDetail.ResumeTag);
+
+                        $('<h5 class="tap_head">履歷資訊</h5>').insertBefore($('#tap_table1'));
+                        $('#tap_table1').footable({
+                            "empty": "There are no rows",
+                            "toggleColumn": "last",
+                            "expandFirst": true,
+                            "columns": content[0],
+                            "rows": content[1],
+                            "paging": {
+                                "position": "right",
+                                "size": 10
+                            }
+                        });
+                    }
+
+                    if (response.OperationDetail) {
+
+                        var detailTag = [];
+                        if (Array.isArray(response.OperationDetail.OperationTag)) {
+                            detailTag = response.OperationDetail.OperationTag;
+                        } else {
+                            detailTag.push(response.OperationDetail.OperationTag);
+                        }
+
+                        $('<h5 class="tap_head">生產紀錄</h5>').insertBefore($('#tap_table2'));
+                        $('#tap_table2').footable({
+                            "empty": "There are no rows",
+                            "toggleColumn": "last",
+                            "expandFirst": true,
+                            "columns": [{
+                                name: "OperationDate",
+                                title: "作業日期",
+                                breakpoints: "xs sm"
+                            }, {
+                                name: "OperationType",
+                                title: "作業種類",
+                                breakpoints: "xs sm"
+                            }, {
+                                name: "Operation",
+                                title: "作業內容",
+                                breakpoints: "xs sm"
+                            }],
+                            "rows": detailTag,
+                            "paging": {
+                                "position": "right",
+                                "size": 10
+                            }
+                        });
+                    }
+
+                    if (response.ProcessDetail) {
+
+                        var detailTag = [];
+                        if (Array.isArray(response.ProcessDetail.ProcessTag)) {
+                            detailTag = response.ProcessDetail.ProcessTag;
+                        } else {
+                            detailTag.push(response.ProcessDetail.ProcessTag);
+                        }
+
+                        $('<h5 class="tap_head">加工資訊</h5>').insertBefore($('#tap_table3'));
+                        $('#tap_table3').footable({
+                            "empty": "There are no rows",
+                            "toggleColumn": "last",
+                            "expandFirst": true,
+                            "columns": [{
+                                name: "ProcessDate",
+                                title: "作業日期",
+                                breakpoints: "xs sm"
+                            }, {
+                                name: "ProcessItem",
+                                title: "作業項目",
+                                breakpoints: "xs sm"
+                            }, {
+                                name: "ProcessArea",
+                                title: "作業場所",
+                                breakpoints: "xs sm"
+                            }, {
+                                name: "ProcessMemo",
+                                title: "備註",
+                                breakpoints: "xs sm"
+                            }],
+                            "rows": detailTag,
+                            "paging": {
+                                "position": "right",
+                                "size": 10
+                            }
+                        });
+                    }
+
+                    if (response.CertificateDetail) {
+
+                        var detailTag = [];
+                        if (Array.isArray(response.CertificateDetail.CertificateTag)) {
+                            detailTag = response.CertificateDetail.CertificateTag;
+                        } else {
+                            detailTag.push(response.CertificateDetail.CertificateTag);
+                        }
+
+                        $('<h5 class="tap_head">其他驗證標章</h5>').insertBefore($('#tap_table4'));
+                        $('#tap_table4').footable({
+                            "empty": "There are no rows",
+                            "toggleColumn": "last",
+                            "expandFirst": true,
+                            "columns": [{
+                                name: "Certificate",
+                                title: "其他標章",
+                                breakpoints: "xs sm"
+                            }],
+                            "rows": detailTag,
+                            "paging": {
+                                "position": "right",
+                                "size": 10
+                            }
+                        });
+                    }
+
+                }
+            }, error: function (xhr) {
+                console.log('Ajex request 發生錯誤');
+            }
+        })
+    }
+
+    function tap_transferTag_column(tags) {
+
+        var columns = [];
+        var row = {};
+
+        tags.forEach(function (tag, i) {
+
+
+            columns.push({
+                name: "tag" + i,
+                title: tag.ResumeTitle,
+                breakpoints: "xs sm"
+            });
+
+            row["tag" + i] = tag.StoreInfo;
+
+        });
+
+        return [columns, [row]];
+    }
+</script>
+
+</body>
+
+</html>

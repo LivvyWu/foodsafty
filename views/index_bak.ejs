@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+    <!-- Bootstrap core CSS -->
+    <link rel='stylesheet' href='/stylesheets/bootstrap.min.css'/>
+    <!-- Material Design Bootstrap -->
+    <link rel='stylesheet' href='/stylesheets/mdb.min.css'/>
+    <!-- custom styles -->
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+
+</head>
+<body>
+<section class="foodsafty">
+    <!--<div class="skewY">-->
+    <!--<div class="skewY s1"></div>-->
+    <!--<div class="skewY s3"></div>-->
+    <!--</div>-->
+    <div class="main-wrap">
+        <header class="p-5 justify-content-center">
+            <!--Section heading-->
+            <h3 class="section-heading teal-text m-2 d-inline col-6">食品安全標章</h3>
+            <div id="btn-search" class="p-5 text-center">
+                <i class="fa fa-search fa-4x" aria-hidden="true"></i>
+                <p>開始查詢</p>
+            </div>
+        </header>
+        <div class="container-fluid justify-content-sm-around">
+            <div class="row">
+                <% fs_options.forEach(function(option){ %>
+                <div class="col">
+                    <div class="p-2 btn-pink text-center text-white fs-option btn--search "><%= option %></div>
+                </div>
+                <% }) %>
+
+            </div>
+        </div>
+        <div class="container search">
+            <form class="search__form p-5" action="">
+                <input class="search__input" name="search" type="search" placeholder="Find..." autocomplete="off"
+                       autocorrect="off" autocapitalize="off" spellcheck="false">
+                <span class="search__info">Hit enter to search or ESC to close</span>
+            </form>
+            <div class="search__related">
+                <div class="search__suggestion">
+                    <h3>May We Suggest?</h3>
+                    <p>#drone #funny #catgif #broken #lost #hilarious #good #red #blue #nono #why #yes #yesyes #aliens
+                        #green</p>
+                </div>
+            </div>
+        </div>
+        <div id="btn-search-close" class="btn--search-close btn--hidden" aria-label="Close search form">
+            <i class="fa fa-times fa-2x" aria-hidden="true"></i>
+        </div>
+    </div>
+</section>
+<!--<div class="col-xs-12 col-md-6 m-auto p-3">-->
+<!--<form class="form-inline waves-effect waves-light col-6">-->
+<!--<input class="form-control col-12" type="text" placeholder="Search">-->
+<!--</form>-->
+<!--</div>-->
+
+<script src='/javascripts/jquery-3.1.1.min.js'></script>
+<script src='/javascripts/tether.min.js'></script>
+<script src='/javascripts/bootstrap.min.js'></script>
+<script src='/javascripts/mdb.min.js'></script>
+<script>
+    /**
+     * main.js
+     * http://www.codrops.com
+     *
+     * Licensed under the MIT license.
+     * http://www.opensource.org/licenses/mit-license.php
+     *
+     * Copyright 2016, Codrops
+     * http://www.codrops.com
+     */
+
+    (function (window) {
+
+        'use strict';
+
+        var mainContainer = document.querySelector('.main-wrap'),
+            openCtrl = document.getElementById('btn-search'),
+            closeCtrl = document.getElementById('btn-search-close'),
+            searchContainer = document.querySelector('.search'),
+            inputSearch = searchContainer.querySelector('.search__input');
+
+        function init() {
+            initEvents();
+        }
+
+        function initEvents() {
+            openCtrl.addEventListener('click', openSearch);
+            closeCtrl.addEventListener('click', closeSearch);
+            document.addEventListener('keyup', function (ev) {
+                // escape key.
+                if (ev.keyCode == 27) {
+                    closeSearch();
+                }
+            });
+        }
+
+        function openSearch() {
+            mainContainer.classList.add('main-wrap--overlay');
+            closeCtrl.classList.remove('btn--hidden');
+            searchContainer.classList.add('search--open');
+            setTimeout(function () {
+                inputSearch.focus();
+            }, 500);
+        }
+
+        function closeSearch() {
+            mainContainer.classList.remove('main-wrap--overlay');
+            closeCtrl.classList.add('btn--hidden');
+            searchContainer.classList.remove('search--open');
+            inputSearch.blur();
+            inputSearch.value = '';
+        }
+
+        init();
+
+    })(window);
+</script>
+
+</body>
+
+</html>
