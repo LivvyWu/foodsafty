@@ -18,63 +18,79 @@
 
 </head>
 <body>
-<section class="foodsafty">
-    <header class="p-5">
-        <!--Section heading-->
-        <h1 class="section-heading text-center font-weight-bold">食品安全標章查詢</h1>
-    </header>
-    <div class="container-fluid category">
-        <p class="text-center grey-text">步驟一: 請選擇標章類型</p>
-        <div class="text-center">
-            <% fs_options.forEach(function(option, i){ %>
-            <button id="option<%= i %>" class="fs_option m-1 d-inline-block"><h5
-                        class="fs_option_name m-auto"><%= option %></h5>
-            </button>
-            <% }) %>
-        </div>
-    </div>
-    <div class="container-fluid">
-        <div class="d-flex flex-row justify-content-center mt-2 mb-2">
-            <p class="grey-text mb-0 align-self-center">步驟二: 請輸入</p>
-            <h3><span class="m-3 badge black selected-names align-self-center"></span></h3>
-            <p class="grey-text mb-0 align-self-center">標章號碼</p>
-        </div>
-
-        <div class="col-xs-12 col-md-6 m-auto search">
-            <form class="search_form form-inline waves-effect waves-light" action="">
-                <input id="traceCode" class="search_input" name="traceCode" type="search"
-                       placeholder="驗證合格可供識別或追查之號碼">
-                <button class="flexsearch_submit" type="button" onclick="flexsearchSubmit()" data-toggle="modal">➜
-                </button>
-            </form>
-            <div class="err_msg"></div>
-        </div>
-    </div>
-</section>
 
 <div id="nanobar"></div>
-<section class="mt-5 container results hidden">
-    <div class="col tables">
-        <table id="factory_table" class="table table-striped" data-paging="true">
-            <h5>標章資訊</h5>
-        </table>
-        <table id="product_table" class="table table-striped" data-paging="true">
-        </table>
-        <!--下面四個table只有tap會使用-->
-        <table id="tap_table1" class="table table-striped" data-paging="true">
-            <h5></h5>
-        </table>
-        <table id="tap_table2" class="table table-striped" data-paging="true">
+<section class="foodsafty container-fluid">
+    <!--標題背景顏色-->
+    <div class="stripe"></div>
+    <!--左導引列-->
+    <!--<div class="about">-->
+    <!--<img class="img-fluid p-1" src="/images/cass.png" alt="">-->
+    <!--<img class="img-fluid p-1" src="/images/tap.png" alt="">-->
+    <!--<img class="img-fluid p-1" src="/images/organicc.png" alt="">-->
+    <!--<img class="img-fluid p-1" src="/images/gap.png" alt="">-->
+    <!--<img class="img-fluid p-1" src="/images/qrcode.png" alt="">-->
+    <!--</div>-->
 
-        </table>
-        <table id="tap_table3" class="table table-striped" data-paging="true">
+    <!--標題-->
+    <div class="container pt-3">
+        <div class="card">
+            <div class="section-heading text-center">
+                <h1 class="font-weight-bold">食品安全標章查詢</h1>
+                <img class="img-fluid" src="/images/labels.png" alt="">
+            </div>
 
-        </table>
-        <table id="tap_table4" class="table table-striped" data-paging="true">
+            <!--搜尋條件-->
+            <div class="search text-center ">
+                <p class="grey-text">步驟一: 請選擇標章類型</p>
+                <div class="options">
+                    <% fs_options.forEach(function(option, i){ %>
+                    <button id="option<%= i %>" class="fs_option m-1 d-inline-block"><h5
+                                class="fs_option_name m-auto"><%= option %></h5>
+                    </button>
+                    <% }) %>
+                </div>
+                <div class="d-flex flex-row justify-content-center mt-2 mb-2">
+                    <p class="grey-text mb-0 align-self-center">步驟二: 請輸入</p>
+                    <h3><span class="m-3 badge selected-names align-self-center"></span></h3>
+                    <p class="grey-text mb-0 align-self-center">標章號碼</p>
+                </div>
+                <div class="col-xs-12 col-md-8 m-auto search">
+                    <input id="traceCode" class="search_input" name="traceCode" type="search"
+                           placeholder="驗證合格可供識別或追查之號碼">
+                    <button class="flexsearch_submit p-2" type="button" onclick="flexsearchSubmit()"
+                            data-toggle="modal">
+                        <span class="fa fa-search"></span>
+                    </button>
+                    <div class="err_msg mb-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--搜尋結果-->
+    <div class="container mt-5 results hidden">
+        <div class="tables">
+            <table id="factory_table" class="table table-striped table-bordered" data-paging="true">
+                <h5>標章資訊</h5>
+            </table>
+            <table id="product_table" class="table table-striped table-bordered" data-paging="true">
+            </table>
+            <!--下面四個table只有tap會使用-->
+            <table id="tap_table1" class="table table-striped table-bordered" data-paging="true">
+                <h5></h5>
+            </table>
+            <table id="tap_table2" class="table table-striped table-bordered" data-paging="true">
+            </table>
+            <table id="tap_table3" class="table table-striped table-bordered" data-paging="true">
 
-        </table>
+            </table>
+            <table id="tap_table4" class="table table-striped table-bordered" data-paging="true">
+
+            </table>
+        </div>
     </div>
 </section>
+
 <br>
 
 
@@ -97,9 +113,27 @@
             $(this).addClass('option_selected').siblings().removeClass('option_selected');
             var name = $(this).find('h5').text();
             $('.selected-names').text(name);
-        })
 
-    });
+            var optionSelected = $('.option_selected').attr('id');
+            var traceCode_input = $('#traceCode');
+            if (optionSelected == 'option0') {
+                traceCode_input.attr('placeholder', '請輸入 6 碼阿拉伯數字');
+            } else if (optionSelected == 'option2') {
+                traceCode_input.attr('placeholder', '請輸入CAS 驗證機構英文簡稱 + 7 碼 阿拉伯數字');
+            } else if (optionSelected == 'option3') {
+                traceCode_input.attr('placeholder', '請輸入 9 碼阿拉伯數字');
+            } else if (optionSelected == 'option4') {
+                traceCode_input.attr('placeholder', '請輸入 10 碼阿拉伯數字');
+            } else if (optionSelected == 'option5') {
+                traceCode_input.attr('placeholder', '請輸入牛隻耳標號碼');
+            } else if (optionSelected == 'option6') {
+                traceCode_input.attr('placeholder', '請輸入 10 碼阿拉伯數字');
+            } else {
+                traceCode_input.attr('placeholder', '請輸入驗證合格可供識別或追查之號碼');
+            }
+        })
+    })
+    ;
 
     function init() {
         $('#factory_table').html('');
@@ -113,15 +147,16 @@
 
     function flexsearchSubmit() {
 
-        nanobar.go(50);
         init();
         var optionSelected = $('.option_selected').attr('id');
         console.log(optionSelected);
-        var traceCode = $('#traceCode').val();
+        var traceCode = $('#traceCode').val().replace(/([~!@#$%^&*()_+=`{}\[\]\|\\:;'<>,.\/? ])+/g, '-').replace(/^(-)+|(-)+$/g, '');
 
         if (optionSelected) {
 
             if (traceCode) {
+
+                nanobar.go(50);
 
                 $('.results').removeClass('hidden');
                 $('.err_msg').html('');
@@ -171,27 +206,6 @@
                         }
                     ];
                 } else if (optionSelected == 'option1') {
-                    url = 'api/gaps/' + traceCode + '/findByGapLabel';
-                    f_columns = [
-                        {
-                            name: "className",
-                            title: "產銷班名稱",
-                            breakpoints: "xs sm"
-                        }, {
-                            name: "orgName",
-                            title: "輔導單位",
-                            breakpoints: "xs sm"
-                        }, {
-                            name: "mainClassName",
-                            title: "產業別",
-                            breakpoints: "xs sm"
-                        }, {
-                            name: "county",
-                            title: "縣市別",
-                            breakpoints: "xs sm"
-                        }
-                    ];
-                } else if (optionSelected == 'option2') {
                     url = 'api/FS_taps/' + traceCode + '/findByTraceCode';
                     f_columns = [
                         {
@@ -224,22 +238,7 @@
                             breakpoints: "xs sm"
                         }
                     ];
-//                    p_columns = [
-//                        {
-//                            name: "OperationDate",
-//                            title: "作業日期",
-//                            breakpoints: "xs sm"
-//                        }, {
-//                            name: "OperationType",
-//                            title: "作業種類",
-//                            breakpoints: "xs sm"
-//                        }, {
-//                            name: "Operation",
-//                            title: "作業內容",
-//                            breakpoints: "xs sm"
-//                        }
-//                    ];
-                } else if (optionSelected == 'option3') {
+                } else if (optionSelected == 'option2') {
                     url = 'api/FS_OrganicAgris/' + traceCode + '/findByVerifyCode';
                     f_columns = [
                         {
@@ -276,6 +275,27 @@
                         }, {
                             name: "verifyManner",
                             title: "加工/分裝/流通",
+                            breakpoints: "xs sm"
+                        }
+                    ];
+                } else if (optionSelected == 'option3') {
+                    url = 'api/gaps/' + traceCode + '/findByGapLabel';
+                    f_columns = [
+                        {
+                            name: "className",
+                            title: "產銷班名稱",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "orgName",
+                            title: "輔導單位",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "mainClassName",
+                            title: "產業別",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "county",
+                            title: "縣市別",
                             breakpoints: "xs sm"
                         }
                     ];
@@ -427,6 +447,7 @@
     }
 
     function generate(url, f_columns, p_columns, optionSelected) {
+        console.log(url);
         $.ajax({
             url: baseUrl + url,
             type: 'GET',
