@@ -58,7 +58,7 @@
                     </div>
                     <div class="col-xs-12 col-md-8 m-auto search">
                         <input id="traceCode" class="search_input" name="traceCode" type="text"
-                               placeholder="驗證合格可供識別或追查之號碼">
+                               placeholder="驗證合格可供識別或追查之號碼"  data-mask-reverse="true" >
                         <div class="text-center hidden" id="pork_traceCode">
                             <input id="traceCode1" class="search_input d-inline-block col-3" name="traceCode"
                                    type="text"
@@ -147,33 +147,31 @@
 
             if (optionSelected == 'option0') {
                 traceCode_input.attr('placeholder', '請輸入 6 碼阿拉伯數字');
-                traceCode_input.mask("000000");
+                traceCode_input.attr('maxlength', '6');
             } else if (optionSelected == 'option2') {
                 traceCode_input.attr('placeholder', '請輸入CAS 驗證機構英文簡稱 + 7 碼 阿拉伯數字');
+                traceCode_input.attr('maxlength', '');
             } else if (optionSelected == 'option3') {
                 traceCode_input.attr('placeholder', '請輸入 9 碼阿拉伯數字');
-                traceCode_input.mask("000000000");
+                traceCode_input.attr('maxlength', '9');
             } else if (optionSelected == 'option4') {
-
                 traceCode_input.attr('placeholder', '請輸入 10 碼阿拉伯數字');
-                traceCode_input.attr('maxlength', 10);
-                traceCode_input.mask("0000000000");
+                traceCode_input.attr('maxlength', '10');
             } else if (optionSelected == 'option5') {
                 traceCode_input.attr('placeholder', '請輸入牛隻耳標號碼');
+                traceCode_input.attr('maxlength', '');
             } else if (optionSelected == 'option6') {
                 traceCode_input.attr('placeholder', '請輸入 10 碼阿拉伯數字');
-                traceCode_input.attr('maxlength', 10);
-                traceCode_input.mask("0000000000");
+                traceCode_input.attr('maxlength', '10');
             } else if (optionSelected == 'option8') {
                 traceCode_input.attr('placeholder', '請輸入 10 碼阿拉伯數字');
-                traceCode_input.attr('maxlength', 10);
-                traceCode_input.mask("0000000000");
+                traceCode_input.attr('maxlength', '10');
             } else {
                 traceCode_input.attr('placeholder', '請輸入驗證合格可供識別或追查之號碼');
+                traceCode_input.attr('maxlength', '');
             }
         })
-    })
-    ;
+    });
 
     function init() {
         $('#factory_table').html('');
@@ -187,8 +185,6 @@
     }
 
     function flexsearchSubmit() {
-
-
 
         init();
         var optionSelected = $('.option_selected').attr('id');
@@ -224,7 +220,7 @@
 
                 if (optionSelected == 'option0') {
 
-                    isValid = validationLen(traceCode.length, 6);
+                    isValid = validationLen(traceCode, 6);
                     url = 'api/cas/' + traceCode + '/findByEmblemID';
                     f_columns = [
                         {
@@ -338,7 +334,7 @@
                         }
                     ];
                 } else if (optionSelected == 'option3') {
-                    isValid = validationLen(traceCode.length, 9);
+                    isValid = validationLen(traceCode, 9);
                     url = 'api/gaps/' + traceCode + '/findByGapLabel';
                     f_columns = [
                         {
@@ -360,7 +356,7 @@
                         }
                     ];
                 } else if (optionSelected == 'option4') {
-                    isValid = validationLen(traceCode.length, 10);
+                    isValid = validationLen(traceCode, 10);
                     url = 'api/pts/' + traceCode + '/findByTraceCode';
                     f_columns = [
                         {
@@ -438,7 +434,7 @@
                         }
                     ];
                 } else if (optionSelected == 'option6') {
-                    isValid = validationLen(traceCode.length, 10);
+                    isValid = validationLen(traceCode, 10);
                     url = 'api/FS_TaftePoultries/' + traceCode + '/findByTraceno';
                     f_columns = [
                         {
@@ -516,7 +512,7 @@
                         }
                     ];
                 } else if (optionSelected == 'option8') {
-                    isValid = validationLen(traceCode.length, 10);
+                    isValid = validationLen(traceCode, 10);
                     url = 'api/FS_Seafoods/' + traceCode + '/findByTraceNo';
                     f_columns = [
                         {
@@ -810,8 +806,11 @@
         return [columns, [row]];
     }
 
+    //正則表達式
     function validationLen(input_len, valid_len) {
-        return input_len - valid_len >= 0 ? true : false;
+
+        var reg = "^[0-9]{"+valid_len+"}$";
+        return input_len.match(reg);
     }
 </script>
 
