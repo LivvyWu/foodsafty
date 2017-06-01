@@ -81,7 +81,6 @@
     <div class="container mt-3 results hidden">
         <div class="tables table-responsive">
             <table id="factory_table" class="table table-striped table-bordered" data-paging="true">
-                <h5>標章資訊</h5>
             </table>
             <table id="product_table" class="table table-striped table-bordered" data-paging="true">
             </table>
@@ -586,6 +585,8 @@
                 var p_rows = [];
 
                 if (response) {
+
+                    $('<h5 class="tap_head">標章資訊</h5>').insertBefore($('#factory_table'));
 
                     if (Array.isArray(response)) {
 
