@@ -50,25 +50,29 @@
                     </button>
                     <% }) %>
                 </div>
-                <div class="d-flex flex-row justify-content-center mt-1 mb-1">
-                    <p class="grey-text mb-0 align-self-center">步驟二: 請輸入</p>
-                    <h3><span class="m-3 badge selected-names align-self-center"></span></h3>
-                    <p class="grey-text mb-0 align-self-center">標章號碼</p>
-                </div>
-                <div class="col-xs-12 col-md-8 m-auto search">
-                    <input id="traceCode" class="search_input" name="traceCode" type="text"
-                           placeholder="驗證合格可供識別或追查之號碼">
-                    <div class="text-center hidden" id="pork_traceCode">
-                        <input id="traceCode1" class="search_input d-inline-block col-3" name="traceCode" type="text"
-                               placeholder="輸入 4 碼">－
-                        <input id="traceCode2" class="search_input d-inline-block col-3" name="traceCode" type="text"
-                               placeholder="輸入 4 碼">
+                <div id="step2" class="hidden">
+                    <div class="d-flex flex-row justify-content-center mt-1 mb-1">
+                        <p class="grey-text mb-0 align-self-center">步驟二: 請輸入</p>
+                        <h3><span class="m-3 badge selected-names align-self-center"></span></h3>
+                        <p class="grey-text mb-0 align-self-center">標章號碼</p>
                     </div>
-                    <button class="flexsearch_submit p-2" type="button" onclick="flexsearchSubmit()"
-                            data-toggle="modal">
-                        <span class="fa fa-search"></span>
-                    </button>
-                    <div class="err_msg mb-3"></div>
+                    <div class="col-xs-12 col-md-8 m-auto search">
+                        <input id="traceCode" class="search_input" name="traceCode" type="text"
+                               placeholder="驗證合格可供識別或追查之號碼">
+                        <div class="text-center hidden" id="pork_traceCode">
+                            <input id="traceCode1" class="search_input d-inline-block col-3" name="traceCode"
+                                   type="text"
+                                   placeholder="輸入 4 碼">－
+                            <input id="traceCode2" class="search_input d-inline-block col-3" name="traceCode"
+                                   type="text"
+                                   placeholder="輸入 4 碼">
+                        </div>
+                        <button class="flexsearch_submit p-2" type="button" onclick="flexsearchSubmit()"
+                                data-toggle="modal">
+                            <span class="fa fa-search"></span>
+                        </button>
+                        <div class="err_msg mb-3"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -81,17 +85,19 @@
             </table>
             <table id="product_table" class="table table-striped table-bordered" data-paging="true">
             </table>
+
             <!--下面四個table只有tap會使用-->
-            <table id="tap_table1" class="table table-striped table-bordered" data-paging="true">
-                <h5></h5>
+            <table id="tap_table1" class="table table-striped table-bordered hidden" data-paging="true">
             </table>
-            <table id="tap_table2" class="table table-striped table-bordered" data-paging="true">
+            <table id="tap_table2" class="table table-striped table-bordered hidden" data-paging="true">
             </table>
-            <table id="tap_table3" class="table table-striped table-bordered" data-paging="true">
+            <table id="tap_table3" class="table table-striped table-bordered hidden" data-paging="true">
+            </table>
+            <table id="tap_table4" class="table table-striped table-bordered hidden" data-paging="true">
+            </table>
 
-            </table>
-            <table id="tap_table4" class="table table-striped table-bordered" data-paging="true">
-
+            <!--下面table只有pts會使用-->
+            <table id="pts_table" class="table table-striped table-bordered hidden" data-paging="true">
             </table>
         </div>
     </div>
@@ -118,12 +124,18 @@
     $(document).ready(function () {
 
         $('.fs_option').click(function () {
+            $('#step2').removeClass('hidden');
+
             $(this).addClass('option_selected').siblings().removeClass('option_selected');
+
+//            取得選擇btn的標章名稱
             var name = $(this).find('h5').text();
             $('.selected-names').text(name);
 
             var optionSelected = $('.option_selected').attr('id');
             var traceCode_input = $('#traceCode');
+
+
 
             if (optionSelected == 'option7') {
                 $('#traceCode').addClass('hidden');
@@ -133,7 +145,6 @@
                 $('#pork_traceCode').addClass('hidden');
             }
 
-
             if (optionSelected == 'option0') {
                 traceCode_input.attr('placeholder', '請輸入 6 碼阿拉伯數字');
                 traceCode_input.mask("000000");
@@ -141,9 +152,9 @@
                 traceCode_input.attr('placeholder', '請輸入CAS 驗證機構英文簡稱 + 7 碼 阿拉伯數字');
             } else if (optionSelected == 'option3') {
                 traceCode_input.attr('placeholder', '請輸入 9 碼阿拉伯數字');
-                traceCode_input.attr('maxlength', 9);
                 traceCode_input.mask("000000000");
             } else if (optionSelected == 'option4') {
+
                 traceCode_input.attr('placeholder', '請輸入 10 碼阿拉伯數字');
                 traceCode_input.attr('maxlength', 10);
                 traceCode_input.mask("0000000000");
@@ -171,10 +182,13 @@
         $('#tap_table2').html('');
         $('#tap_table3').html('');
         $('#tap_table4').html('');
+        $('#pts_table').html('');
         $('h5.tap_head').html('');
     }
 
     function flexsearchSubmit() {
+
+
 
         init();
         var optionSelected = $('.option_selected').attr('id');
@@ -184,6 +198,21 @@
         var isValid = true;
 
         if (optionSelected) {
+
+            if (optionSelected == 'option1') {
+
+                $('table[id^="tap_table"]').removeClass('hidden');
+            } else {
+                $('table[id^="tap_table"]').html('');
+                $('table[id^="tap_table"]').addClass('hidden');
+            }
+
+            if (optionSelected == 'option4') {
+                $('#pts_table').removeClass('hidden');
+            } else {
+                $('#pts_table').html('');
+                $('#pts_table').addClass('hidden');
+            }
 
             if (traceCode || (traceCode1 && traceCode2)) {
 
@@ -362,17 +391,6 @@
                             name: "description",
                             title: "簡介",
                             breakpoints: "all"
-                        }
-                    ];
-                    p_columns = [
-                        {
-                            name: "productName",
-                            title: "產品名稱",
-                            breakpoints: "xs sm"
-                        }, {
-                            name: "place",
-                            title: "產地",
-                            breakpoints: "xs sm"
                         }
                     ];
                 } else if (optionSelected == 'option5') {
@@ -576,6 +594,7 @@
                             f_rows.push(response);
                         }
                     }
+
                 }
 
                 $('#factory_table').footable({
@@ -591,21 +610,14 @@
                     }
                 });
 
+
                 if (p_columns.length > 0) {
 
                     if (response) {
-                        if (Array.isArray(response) && response.length > 0) {
-                            if (response[0].OperationDetail && response[0].OperationDetail.OperationTag) {
-                                p_rows = response[0].OperationDetail.OperationTag;
-                            } else {
-                                p_rows = response;
-                            }
+                        if (Array.isArray(response)) {
+                            p_rows = response;
                         } else {
-                            if (response.productList) {
-                                p_rows = response.productList;
-                            } else {
-                                p_rows.push(response);
-                            }
+                            p_rows.push(response);
                         }
                     }
 
@@ -623,6 +635,8 @@
                 }
 
                 if (optionSelected == 'option1') {
+
+                    response = response[0];
 
                     if (response.ResumeDetail) {
                         var content = tap_transferTag_column(response.ResumeDetail.ResumeTag);
@@ -739,6 +753,36 @@
                     }
 
                 }
+
+                if (optionSelected == 'option4') {
+
+                    if (response.productList) {
+                        $('<h5 class="tap_head">產品資訊</h5>').insertBefore($('#pts_table'));
+
+                        $('#pts_table').footable({
+                            "toggleColumn": "last",
+                            "expandFirst": true,
+                            "columns": [
+                                {
+                                    name: "productName",
+                                    title: "產品名稱",
+                                    breakpoints: "xs sm"
+                                }, {
+                                    name: "place",
+                                    title: "產地",
+                                    breakpoints: "xs sm"
+                                }
+                            ],
+                            "rows": response.productList,
+                            "paging": {
+                                "position": "right",
+                                "size": 10
+                            }
+                        });
+                    }
+
+                }
+
             }, error: function (xhr) {
                 console.log('Ajex request 發生錯誤');
             }
