@@ -34,7 +34,7 @@
     </div>
     <!--標題-->
     <div class="container pt-2">
-        <div class="card fadeInDown p-3">
+        <div class="card fadeInDown p-1">
             <div class="section-heading text-center">
                 <h1 class="font-weight-bold">食品安全標章查詢</h1>
                 <img class="img-fluid" src="/images/labels.png" alt="">
@@ -56,8 +56,14 @@
                     <p class="grey-text mb-0 align-self-center">標章號碼</p>
                 </div>
                 <div class="col-xs-12 col-md-8 m-auto search">
-                    <input id="traceCode" class="search_input" name="traceCode" type="search"
+                    <input id="traceCode" class="search_input" name="traceCode" type="text"
                            placeholder="驗證合格可供識別或追查之號碼">
+                    <div class="text-center hidden" id="pork_traceCode">
+                        <input id="traceCode1" class="search_input d-inline-block col-3" name="traceCode" type="text"
+                               placeholder="輸入 4 碼">－
+                        <input id="traceCode2" class="search_input d-inline-block col-3" name="traceCode" type="text"
+                               placeholder="輸入 4 碼">
+                    </div>
                     <button class="flexsearch_submit p-2" type="button" onclick="flexsearchSubmit()"
                             data-toggle="modal">
                         <span class="fa fa-search"></span>
@@ -69,7 +75,7 @@
     </div>
     <!--搜尋結果-->
     <div class="container mt-3 results hidden">
-        <div class="tables">
+        <div class="tables table-responsive">
             <table id="factory_table" class="table table-striped table-bordered" data-paging="true">
                 <h5>標章資訊</h5>
             </table>
@@ -94,6 +100,7 @@
 
 
 <script src='/javascripts/jquery-3.1.1.min.js'></script>
+<script src='/javascripts/jquery.mask.min.js'></script>
 <script src='/javascripts/tether.min.js'></script>
 <script src='/javascripts/bootstrap.min.js'></script>
 <script src='/javascripts/footable.min.js'></script>
@@ -101,7 +108,8 @@
 <script src='/javascripts/nanobar.js'></script>
 <script>
 
-    var baseUrl = 'http://210.65.138.65:9000/';
+    var baseUrl = 'http://140.110.30.110:8080/';
+    //    var baseUrl = 'http://140.92.25.47:8080/';
     var options = {
         id: 'nanobar'
     };
@@ -116,18 +124,39 @@
 
             var optionSelected = $('.option_selected').attr('id');
             var traceCode_input = $('#traceCode');
+
+            if (optionSelected == 'option7') {
+                $('#traceCode').addClass('hidden');
+                $('#pork_traceCode').removeClass('hidden');
+            } else {
+                $('#traceCode').removeClass('hidden');
+                $('#pork_traceCode').addClass('hidden');
+            }
+
+
             if (optionSelected == 'option0') {
                 traceCode_input.attr('placeholder', '請輸入 6 碼阿拉伯數字');
+                traceCode_input.mask("000000");
             } else if (optionSelected == 'option2') {
                 traceCode_input.attr('placeholder', '請輸入CAS 驗證機構英文簡稱 + 7 碼 阿拉伯數字');
             } else if (optionSelected == 'option3') {
                 traceCode_input.attr('placeholder', '請輸入 9 碼阿拉伯數字');
+                traceCode_input.attr('maxlength', 9);
+                traceCode_input.mask("000000000");
             } else if (optionSelected == 'option4') {
                 traceCode_input.attr('placeholder', '請輸入 10 碼阿拉伯數字');
+                traceCode_input.attr('maxlength', 10);
+                traceCode_input.mask("0000000000");
             } else if (optionSelected == 'option5') {
                 traceCode_input.attr('placeholder', '請輸入牛隻耳標號碼');
             } else if (optionSelected == 'option6') {
                 traceCode_input.attr('placeholder', '請輸入 10 碼阿拉伯數字');
+                traceCode_input.attr('maxlength', 10);
+                traceCode_input.mask("0000000000");
+            } else if (optionSelected == 'option8') {
+                traceCode_input.attr('placeholder', '請輸入 10 碼阿拉伯數字');
+                traceCode_input.attr('maxlength', 10);
+                traceCode_input.mask("0000000000");
             } else {
                 traceCode_input.attr('placeholder', '請輸入驗證合格可供識別或追查之號碼');
             }
@@ -149,14 +178,14 @@
 
         init();
         var optionSelected = $('.option_selected').attr('id');
-        console.log(optionSelected);
         var traceCode = $('#traceCode').val().replace(/([~!@#$%^&*()_+=`{}\[\]\|\\:;'<>,.\/? ])+/g, '-').replace(/^(-)+|(-)+$/g, '');
+        var traceCode1 = $('#traceCode1').val().replace(/([~!@#$%^&*()_+=`{}\[\]\|\\:;'<>,.\/? ])+/g, '-').replace(/^(-)+|(-)+$/g, '');
+        var traceCode2 = $('#traceCode2').val().replace(/([~!@#$%^&*()_+=`{}\[\]\|\\:;'<>,.\/? ])+/g, '-').replace(/^(-)+|(-)+$/g, '');
+        var isValid = true;
 
         if (optionSelected) {
 
-            if (traceCode) {
-
-                nanobar.go(50);
+            if (traceCode || (traceCode1 && traceCode2)) {
 
                 $('.err_msg').html('');
 
@@ -165,6 +194,8 @@
                 var url = '';
 
                 if (optionSelected == 'option0') {
+
+                    isValid = validationLen(traceCode.length, 6);
                     url = 'api/cas/' + traceCode + '/findByEmblemID';
                     f_columns = [
                         {
@@ -172,20 +203,20 @@
                             title: "行號名稱",
                             breakpoints: "xs sm"
                         }, {
+                            name: "Factory_Director",
+                            title: "負責人",
+                            breakpoints: "xs sm"
+                        }, {
                             name: "Factory_Address",
                             title: "公司地址",
                             breakpoints: "xs sm"
                         }, {
                             name: "Factory_Tel",
-                            title: "連絡電話",
+                            title: "聯絡電話",
                             breakpoints: "xs sm"
                         }, {
                             name: "Factory_Fax",
                             title: "傳真號碼",
-                            breakpoints: "xs sm"
-                        }, {
-                            name: "Factory_Director",
-                            title: "負責人",
                             breakpoints: "xs sm"
                         }
                     ];
@@ -268,16 +299,17 @@
                             title: "經營業者電話",
                             breakpoints: "xs sm"
                         }, {
-                            name: "productName",
-                            title: "產品品項",
-                            breakpoints: "xs sm"
-                        }, {
                             name: "verifyManner",
                             title: "加工/分裝/流通",
                             breakpoints: "xs sm"
+                        }, {
+                            name: "productName",
+                            title: "產品品項",
+                            breakpoints: "all"
                         }
                     ];
                 } else if (optionSelected == 'option3') {
+                    isValid = validationLen(traceCode.length, 9);
                     url = 'api/gaps/' + traceCode + '/findByGapLabel';
                     f_columns = [
                         {
@@ -299,6 +331,7 @@
                         }
                     ];
                 } else if (optionSelected == 'option4') {
+                    isValid = validationLen(traceCode.length, 10);
                     url = 'api/pts/' + traceCode + '/findByTraceCode';
                     f_columns = [
                         {
@@ -324,11 +357,11 @@
                         }, {
                             name: "url",
                             title: "網址",
-                            breakpoints: "xs sm"
+                            breakpoints: "all"
                         }, {
                             name: "description",
                             title: "簡介",
-                            breakpoints: "xs sm"
+                            breakpoints: "all"
                         }
                     ];
                     p_columns = [
@@ -387,6 +420,7 @@
                         }
                     ];
                 } else if (optionSelected == 'option6') {
+                    isValid = validationLen(traceCode.length, 10);
                     url = 'api/FS_TaftePoultries/' + traceCode + '/findByTraceno';
                     f_columns = [
                         {
@@ -431,22 +465,91 @@
                         }, {
                             name: "typical",
                             title: "特色",
-                            breakpoints: "xs sm"
+                            breakpoints: "all"
                         }
                     ]
+                } else if (optionSelected == 'option7') {
+                    url = 'api/FS_Porks/findByCode?Code1=' + traceCode1 + '&Code2=' + traceCode2;
+                    f_columns = [
+                        {
+                            name: "marketName",
+                            title: "市場名稱",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "farmName",
+                            title: "農場名稱",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "transDate",
+                            title: "交易日期",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "farmCity",
+                            title: "農場縣市",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "farmTown",
+                            title: "農場鄉鎮",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "msg",
+                            title: "說明",
+                            breakpoints: "xs sm"
+                        }
+                    ];
+                } else if (optionSelected == 'option8') {
+                    isValid = validationLen(traceCode.length, 10);
+                    url = 'api/FS_Seafoods/' + traceCode + '/findByTraceNo';
+                    f_columns = [
+                        {
+                            name: "AquaName",
+                            title: "漁民姓名",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "Tel",
+                            title: "聯絡電話",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "Addr",
+                            title: "聯絡地址",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "EMail",
+                            title: "電子郵件",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "ProdName",
+                            title: "產品名稱",
+                            breakpoints: "xs sm"
+                        }, {
+                            name: "Url",
+                            title: "網址",
+                            breakpoints: "all"
+                        }, {
+                            name: "Intro",
+                            title: "簡介",
+                            breakpoints: "all"
+                        }
+                    ];
                 }
-                generate(url, f_columns, p_columns, optionSelected);
+
+                if (isValid) {
+                    //產生Table的function
+                    generate(url, f_columns, p_columns, optionSelected);
+                } else {
+                    $('.err_msg').html('請檢查標章號碼長度');
+                }
 
             } else {
-                $('.err_msg').html('請輸入標章號碼')
+                $('.err_msg').html('請輸入標章號碼');
             }
         } else {
-            $('.err_msg').html('請選擇標章類型');
+            $('.err_msg').html('請先選擇標章類型');
         }
     }
 
     function generate(url, f_columns, p_columns, optionSelected) {
-        console.log(url);
+        nanobar.go(50);
         $.ajax({
             url: baseUrl + url,
             type: 'GET',
@@ -462,12 +565,16 @@
                 var f_rows = [];
                 var p_rows = [];
 
-                if (Array.isArray(response)) {
-                    f_rows.push(response[0]);
-                } else {
-                    if (response && response!=="NO MATCH DATA!") {
+                if (response) {
 
-                        f_rows.push(response);
+                    if (Array.isArray(response)) {
+
+                        f_rows.push(response[0]);
+
+                    } else {
+                        if (response !== "NO MATCH DATA!") {
+                            f_rows.push(response);
+                        }
                     }
                 }
 
@@ -475,6 +582,7 @@
                     "empty": "查無資料",
                     "toggleColumn": "last",
                     "expandFirst": true,
+                    "visible": true,
                     "columns": f_columns,
                     "rows": f_rows,
                     "paging": {
@@ -484,20 +592,22 @@
                 });
 
                 if (p_columns.length > 0) {
-                    if (Array.isArray(response)) {
-                        if (response[0].OperationDetail && response[0].OperationDetail.OperationTag) {
-                            p_rows = response[0].OperationDetail.OperationTag;
+
+                    if (response) {
+                        if (Array.isArray(response) && response.length > 0) {
+                            if (response[0].OperationDetail && response[0].OperationDetail.OperationTag) {
+                                p_rows = response[0].OperationDetail.OperationTag;
+                            } else {
+                                p_rows = response;
+                            }
                         } else {
-                            p_rows = response;
-                        }
-                    } else {
-                        if (response.productList) {
-                            p_rows = response.productList;
-                        } else {
-                            p_rows.push(response);
+                            if (response.productList) {
+                                p_rows = response.productList;
+                            } else {
+                                p_rows.push(response);
+                            }
                         }
                     }
-
 
                     $('#product_table').footable({
                         "empty": "查無資料",
@@ -512,15 +622,13 @@
                     });
                 }
 
-                if (optionSelected == 'option2') {
+                if (optionSelected == 'option1') {
 
                     if (response.ResumeDetail) {
-
                         var content = tap_transferTag_column(response.ResumeDetail.ResumeTag);
 
                         $('<h5 class="tap_head">履歷資訊</h5>').insertBefore($('#tap_table1'));
                         $('#tap_table1').footable({
-                            "empty": "There are no rows",
                             "toggleColumn": "last",
                             "expandFirst": true,
                             "columns": content[0],
@@ -543,7 +651,6 @@
 
                         $('<h5 class="tap_head">生產紀錄</h5>').insertBefore($('#tap_table2'));
                         $('#tap_table2').footable({
-                            "empty": "There are no rows",
                             "toggleColumn": "last",
                             "expandFirst": true,
                             "columns": [{
@@ -578,7 +685,6 @@
 
                         $('<h5 class="tap_head">加工資訊</h5>').insertBefore($('#tap_table3'));
                         $('#tap_table3').footable({
-                            "empty": "There are no rows",
                             "toggleColumn": "last",
                             "expandFirst": true,
                             "columns": [{
@@ -617,7 +723,6 @@
 
                         $('<h5 class="tap_head">其他驗證標章</h5>').insertBefore($('#tap_table4'));
                         $('#tap_table4').footable({
-                            "empty": "There are no rows",
                             "toggleColumn": "last",
                             "expandFirst": true,
                             "columns": [{
@@ -659,6 +764,10 @@
         });
 
         return [columns, [row]];
+    }
+
+    function validationLen(input_len, valid_len) {
+        return input_len - valid_len >= 0 ? true : false;
     }
 </script>
 
