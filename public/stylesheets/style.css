@@ -96,7 +96,6 @@ p {
     display: inline-block;
     border: 2px solid #9c743e;
     width: 30px;
-    /*margin-bottom: 9px;*/
 }
 
 .foodsafty .section-heading img {
@@ -109,13 +108,12 @@ p {
     min-height: 70px;
     /*min-width: 150px;*/
     width: calc(100% / 4);
-    /*-webkit-transition-duration: 0.2s;*/
-    /*transition-duration: 0.2s;*/
-    /*-webkit-transition-timing-function: ease-out;*/
-    /*transition-timing-function: ease-out;*/
+    -webkit-transition: all 0.5s ease-out;
+    -moz-transition: all 0.5s ease-out;
+    -o-transition: all 0.55s ease-out;
+    transition: all 0.5s ease-out;
     border: none;
     background: #faffbd;
-    /*background: #aae3de;*/
 }
 
 /*.fs_option::before,*/
@@ -155,11 +153,12 @@ p {
 /*transition-delay: 0.1s;*/
 /*}*/
 .fs_option:hover {
-    -webkit-transition: background 1s ease-out;
-    -moz-transition: background 1s ease-out;
-    -o-transition: background 1s ease-out;
-    transition: background 1s ease-out;
-    background: linear-gradient(90deg, #19b5c1, #28c88c);
+    -webkit-transition: all 0.5s ease-out;
+    -moz-transition: all 0.5s ease-out;
+    -o-transition: all 0.55s ease-out;
+    transition: all 0.5s ease-out;
+    background: #7aa374;
+    background-image: linear-gradient(to right, #19b5c1, #28c88c);
 }
 
 /*.fs_option:hover::before,*/
@@ -219,25 +218,11 @@ input[type=text] {
     position: absolute;
     right: 12px;
     top: 0;
-    background: transparent;
     border: none;
     font-family: 'Helvetica', sans-serif;
-    font-size: 30px;
+    font-size: 1rem;
 }
 
-.flexsearch_submit span {
-    -webkit-transition: border 0.6s 0s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    color: rgba(122, 163, 116, 1);
-}
-
-input.search_input:focus ~ .flexsearch_submit span {
-    -webkit-transition: border 0.6s 0s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: translate(-12px, -3px);
-    -ms-transform: translate(-12px, -3px);
-    -webkit-transform: translate(-12px, -3px);
-    -moz-transform: translate(-12px, -3px);
-}
 
 /*Footable*/
 .footable-header > th {

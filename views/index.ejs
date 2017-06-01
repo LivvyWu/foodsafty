@@ -34,7 +34,7 @@
     </div>
     <!--標題-->
     <div class="container pt-2">
-        <div class="card fadeInDown p-1">
+        <div class="card fadeInDown p-2">
             <div class="section-heading text-center">
                 <h1 class="font-weight-bold">食品安全標章查詢</h1>
                 <img class="img-fluid" src="/images/labels.png" alt="">
@@ -43,7 +43,7 @@
             <!--搜尋條件-->
             <div class="search text-center">
                 <p class="grey-text">步驟一: 請選擇標章類型</p>
-                <div class="options">
+                <div class="options mb-2">
                     <% fs_options.forEach(function(option, i){ %>
                     <button id="option<%= i %>" class="fs_option m-1 d-inline-block"><h5
                                 class="fs_option_name m-auto"><%= option %></h5>
@@ -51,7 +51,7 @@
                     <% }) %>
                 </div>
                 <div id="step2" class="hidden">
-                    <div class="d-flex flex-row justify-content-center mt-1 mb-1">
+                    <div class="d-flex flex-row justify-content-center mb-1">
                         <p class="grey-text mb-0 align-self-center">步驟二: 請輸入</p>
                         <h3><span class="m-3 badge selected-names align-self-center"></span></h3>
                         <p class="grey-text mb-0 align-self-center">標章號碼</p>
@@ -67,9 +67,9 @@
                                    type="text"
                                    placeholder="輸入 4 碼">
                         </div>
-                        <button class="flexsearch_submit p-2" type="button" onclick="flexsearchSubmit()"
-                                data-toggle="modal">
-                            <span class="fa fa-search"></span>
+                        <button class="flexsearch_submit p-2 btn btn-default" type="button" onclick="flexsearchSubmit()"
+                                data-toggle="modal">送出查詢
+                            <!--<span class="fa fa-search"></span>-->
                         </button>
                         <div class="err_msg mb-3"></div>
                     </div>
