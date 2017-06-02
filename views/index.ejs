@@ -16,7 +16,7 @@
     <!-- Animate CSS -->
     <link rel='stylesheet' href='/stylesheets/animations.css'/>
     <!-- Loading CSS -->
-    <link rel='stylesheet' href='/stylesheets/jquery.loading.css'/>
+    <!--<link rel='stylesheet' href='/stylesheets/jquery.loading.css'/>-->
     <!-- custom styles -->
     <link rel='stylesheet' href='/stylesheets/style.css'/>
 
@@ -107,7 +107,7 @@
 
 
 <script src='/javascripts/jquery-3.1.1.min.js'></script>
-<script src='/javascripts/jquery.loading.js'></script>
+<!--<script src='/javascripts/jquery.loading.js'></script>-->
 <script src='/javascripts/jquery.mask.min.js'></script>
 <script src='/javascripts/tether.min.js'></script>
 <script src='/javascripts/bootstrap.min.js'></script>
@@ -575,7 +575,7 @@
 
     function generate(url, f_columns, p_columns, optionSelected) {
 
-//        nanobar.go(50);
+        nanobar.go(50);
         $.ajax({
             url: baseUrl + url,
             type: 'GET',
@@ -584,15 +584,14 @@
                 $('.results').removeClass('hidden');
 //                $('#another-loading').loading('stop');
 
-//                setTimeout(function () {
-//                    nanobar.go(100);
-
-//                    $("html, body").animate({scrollTop: $('.results').offset().top}, 1000, 'easeInOutExpo');
-//                }, 300);
-
-                $('.results').on('loading.stop', function() {
+                setTimeout(function () {
+                    nanobar.go(100);
                     $("html, body").animate({scrollTop: $('.results').offset().top}, 1000, 'easeInOutExpo');
-                });
+                }, 300);
+
+//                $('.results').on('loading.stop', function() {
+//                    $("html, body").animate({scrollTop: $('.results').offset().top}, 1000, 'easeInOutExpo');
+//                });
                 var f_rows = [];
                 var p_rows = [];
 
