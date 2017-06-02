@@ -189,10 +189,10 @@
     }
 
     function flexsearchSubmit() {
-        $('.results').loading({
-            theme: 'light',
-            message: 'Working...'
-        });
+//        $('.results').loading({
+//            theme: 'light',
+//            message: 'Working...'
+//        });
         init();
         var optionSelected = $('.option_selected').attr('id');
         var traceCode = $('#traceCode').val().replace(/([~!@#$%^&*()_+=`{}\[\]\|\\:;'<>,.\/? ])+/g, '-').replace(/^(-)+|(-)+$/g, '');
