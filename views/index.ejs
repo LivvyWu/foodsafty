@@ -15,6 +15,8 @@
     <link rel='stylesheet' href='/stylesheets/footable.bootstrap.css'/>
     <!-- Animate CSS -->
     <link rel='stylesheet' href='/stylesheets/animations.css'/>
+    <!-- Loading CSS -->
+    <link rel='stylesheet' href='/stylesheets/jquery.loading.css'/>
     <!-- custom styles -->
     <link rel='stylesheet' href='/stylesheets/style.css'/>
 
@@ -105,6 +107,7 @@
 
 
 <script src='/javascripts/jquery-3.1.1.min.js'></script>
+<script src='/javascripts/jquery.loading.js'></script>
 <script src='/javascripts/jquery.mask.min.js'></script>
 <script src='/javascripts/tether.min.js'></script>
 <script src='/javascripts/bootstrap.min.js'></script>
@@ -186,7 +189,10 @@
     }
 
     function flexsearchSubmit() {
-
+        $('.results').loading({
+            theme: 'light',
+            message: 'Working...'
+        });
         init();
         var optionSelected = $('.option_selected').attr('id');
         var traceCode = $('#traceCode').val().replace(/([~!@#$%^&*()_+=`{}\[\]\|\\:;'<>,.\/? ])+/g, '-').replace(/^(-)+|(-)+$/g, '');
@@ -492,27 +498,27 @@
                     f_columns = [
                         {
                             name: "marketName",
-                            title: "市場名稱",
+                            title: "拍賣市場",
                             breakpoints: "xs sm"
                         }, {
                             name: "farmName",
-                            title: "農場名稱",
+                            title: "來源畜牧場",
                             breakpoints: "xs sm"
                         }, {
                             name: "transDate",
-                            title: "交易日期",
+                            title: "拍賣日期",
                             breakpoints: "xs sm"
                         }, {
                             name: "farmCity",
-                            title: "農場縣市",
+                            title: "畜牧場縣市",
                             breakpoints: "xs sm"
                         }, {
                             name: "farmTown",
-                            title: "農場鄉鎮",
+                            title: "畜牧場鄉鎮",
                             breakpoints: "xs sm"
                         }, {
                             name: "msg",
-                            title: "說明",
+                            title: "其他說明",
                             breakpoints: "xs sm"
                         }
                     ];
@@ -568,19 +574,25 @@
     }
 
     function generate(url, f_columns, p_columns, optionSelected) {
-        nanobar.go(50);
+
+//        nanobar.go(50);
         $.ajax({
             url: baseUrl + url,
             type: 'GET',
             success: function (response) {
 
                 $('.results').removeClass('hidden');
-                setTimeout(function () {
-                    nanobar.go(100);
+//                $('#another-loading').loading('stop');
+
+//                setTimeout(function () {
+//                    nanobar.go(100);
+
+//                    $("html, body").animate({scrollTop: $('.results').offset().top}, 1000, 'easeInOutExpo');
+//                }, 300);
+
+                $('.results').on('loading.stop', function() {
                     $("html, body").animate({scrollTop: $('.results').offset().top}, 1000, 'easeInOutExpo');
-                }, 300);
-
-
+                });
                 var f_rows = [];
                 var p_rows = [];
 
